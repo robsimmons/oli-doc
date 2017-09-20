@@ -1,0 +1,24 @@
+{
+    "name": "oli-doc",
+    "version": "1.0.0",
+    "description": "Documenting the JS API for OLI custom activities",
+    "main": "index.js",
+    "dependencies": {},
+    "devDependencies": {
+        "typedoc": "^0.8.0"
+    },
+    "scripts": {
+        "tsc": "tsc --strictNullChecks",
+        "typedoc": "typedoc --out typedoc --mode file"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/robsimmons/oli-doc.git"
+    },
+    "author": "Calculemus LLC",
+    "license": "GFDL-1.3",
+    "bugs": {
+        "url": "https://github.com/robsimmons/oli-doc/issues"
+    },
+    "homepage": "https://github.com/robsimmons/oli-doc#readme"
+}
