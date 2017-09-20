@@ -1,7 +1,9 @@
 /**
- * A Question represents a single (multipart) OLI question.
+ * A Question represents a single (multipart) OLI question. 
  *
- * We build up questions imperatively, by adding one part at a time with the addInput function.
+ * Questions mainly serves to hold {@link Part Parts}.
+ *
+ * We build up questions imperatively, by adding one part at a time with the {@link addInput} function.
  */
 export class Question {
     private id: string;
