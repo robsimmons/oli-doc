@@ -1,32 +1,32 @@
 {
-  "name": "oli-doc",
-  "version": "1.0.0",
-  "description": "Documenting the JS API for OLI custom activities",
-  "main": "index.js",
-  "dependencies": {},
-  "devDependencies": {
-    "prettier": "^1.7.0",
-    "surge": "^0.19.0",
-    "typedoc": "^0.8.0"
-  },
-  "scripts": {
-    "tsc": "tsc --strictNullChecks",
-    "pretypedoc": "npm run tsc",
-    "typedoc": "typedoc --out typedoc --mode file",
-    "presurge": "npm run typedoc",
-    "surge": "surge -p ./typedoc -d oli-doc-demo.surge.sh",
-    "prettier": "prettier --write src/**/*.ts package.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/robsimmons/oli-doc.git"
-  },
-  "author": "Calculemus LLC",
-  "license": "GFDL-1.3",
-  "bugs": {
-    "url": "https://github.com/robsimmons/oli-doc/issues"
-  },
-  "homepage": "https://github.com/robsimmons/oli-doc#readme",
+    "name": "oli-doc",
+    "version": "1.0.0",
+    "description": "Documenting the JS API for OLI custom activities",
+    "main": "index.js",
+    "dependencies": {},
+    "devDependencies": {
+        "prettier": "^1.7.0",
+        "surge": "^0.19.0",
+        "typedoc": "^0.8.0"
+    },
+    "scripts": {
+        "tsc": "tsc --strictNullChecks",
+        "pretypedoc": "npm run tsc",
+        "typedoc": "typedoc --out typedoc --mode file",
+        "presurge": "npm run typedoc",
+        "surge": "surge -p ./typedoc -d oli-doc-demo.surge.sh",
+        "prettier": "prettier --write src/**/*.ts package.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/robsimmons/oli-doc.git"
+    },
+    "author": "Calculemus LLC",
+    "license": "GFDL-1.3",
+    "bugs": {
+        "url": "https://github.com/robsimmons/oli-doc/issues"
+    },
+    "homepage": "https://github.com/robsimmons/oli-doc#readme",
     "prettier": {
         "printWidth": 110,
         "tabWidth": 4
