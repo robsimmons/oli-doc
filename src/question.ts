@@ -1,3 +1,5 @@
+import { Part } from "./part";
+
 /**
  * A Question represents a single (multipart) OLI question. 
  *
@@ -6,41 +8,52 @@
  * We build up questions imperatively, by adding one part at a time with the {@link addInput} function.
  */
 export class Question {
-    private id: string;
-    private prompt: string;
-    private parts: { [id: string]: Part };
+  private id: string;
+  private prompt: string;
+  private parts: { [id: string]: Part };
 
-    constructor(id: string, prompt: string) {
-        this.id = id;
-        this.prompt = prompt;
-        this.parts = {};
-    }
+  /**
+     * @param id The unique identifier for the question. NOTE - Does this have to be unique within an entire
+     * module? Or within an entire X? What is its use?
+     * @param prompt The text shown to the student, generally (always?) before any question parts.
+     */
+  constructor(id: string, prompt: string) {
+    this.id = id;
+    this.prompt = prompt;
+    this.parts = {};
+  }
 
-    public getId(): string {
-        return this.id;
-    }
+  public getId(): string {
+    return this.id;
+  }
 
-    public setId(id: string) {
-        this.id = id;
-    }
+  /**
+     * NOTE is this ever used?
+     */
+  public setId(id: string) {
+    this.id = id;
+  }
 
-    public getPrompt(): string {
-        return this.prompt;
-    }
+  public getPrompt(): string {
+    return this.prompt;
+  }
 
-    public setPrompt(prompt: string) {
-        this.prompt = prompt;
-    }
+  /**
+     * NOTE is this ever used?
+     */
+  public setPrompt(prompt: string) {
+    this.prompt = prompt;
+  }
 
-    public getParts(): { readonly [id: string]: Part } {
-        return this.parts;
-    }
+  public getParts(): { readonly [id: string]: Part } {
+    return this.parts;
+  }
 
-    public getPart(id: string): Part {
-        return this.parts[id];
-    }
+  public getPart(id: string): Part {
+    return this.parts[id];
+  }
 
-    public addInput(input: Part) {
-        this.parts[input.getId()] = input;
-    }
+  public addInput(input: Part) {
+    this.parts[input.getId()] = input;
+  }
 }
