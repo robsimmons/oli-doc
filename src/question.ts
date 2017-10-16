@@ -10,7 +10,7 @@ import { Part } from "./part";
 export class Question {
     private id: string;
     private prompt: string;
-    private parts: { [id: string]: Part };
+    private parts: { [id: string]: Part | undefined };
 
     /**
      * @param id The unique identifier for the question.
@@ -63,7 +63,7 @@ export class Question {
     /**
      * Get all the {@link Part Parts} of a question in a map keyed by the part's unique identifer.
      */
-    public getParts(): { readonly [id: string]: Part } {
+    public getParts(): { readonly [id: string]: Part | undefined } {
         return this.parts;
     }
 
@@ -71,8 +71,8 @@ export class Question {
      * Use a part's unique identifier to access the {@link Part}.
      */
     public getPart(id: string): Part | null {
-        if (id in this.parts) {
-            return this.parts[id];
+        if (this.parts.hasOwnProperty(id)) {
+            return this.parts[id] as Part;
         } else {
             return null;
         }

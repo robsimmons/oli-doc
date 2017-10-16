@@ -92,7 +92,7 @@ export class Part {
      * Get a piece of feedback based on that feedback's unique identifier.
      */
     public getFeedback(id: string): Feedback | null {
-        if (id in this.feedback) {
+        if (this.feedback.hasOwnProperty(id)) {
             return this.feedback[id];
         } else {
             return null;
@@ -145,7 +145,7 @@ export class Part {
      * Returns the earliest hint with a given id, or null if no hint is found.
      */
     public getHint(id: string): Hint | null {
-        for (let hint in this.hints) {
+        for (let hint = 0; hint < this.hints.length; hint++) {
             if (this.hints[hint].id == id) {
                 return this.hints[hint];
             }

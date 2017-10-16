@@ -1,7 +1,8 @@
 import { Input } from "./input";
 
 /**
- * PartData encapsulates the user's response to a {@link Part}, as well as the 
+ * PartData encapsulates the user's answer to a {@link Question}'s {@link Part}, as well as the autograder's
+ * state of responding to that answer..
  */
 export class PartData {
     private id: string;
@@ -158,7 +159,7 @@ export class PartData {
     }
 
     /**
-     * Serialize this PartData to XML.
+     * Serialize to XML.
      */
     public toXML(): XMLDocument {
         throw new Error("Unimplemented");
