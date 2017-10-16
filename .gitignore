@@ -1,5 +1,6 @@
 node_modules
 typedoc
+lib/
 *~
 src/*.js
 src/*.js.map

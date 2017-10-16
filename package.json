@@ -10,12 +10,12 @@
         "typedoc": "^0.8.0"
     },
     "scripts": {
-        "tsc": "tsc --strictNullChecks",
+        "tsc": "tsc -p .",
         "pretypedoc": "npm run tsc",
         "typedoc": "typedoc --out typedoc --mode file",
         "presurge": "npm run typedoc",
         "surge": "surge -p ./typedoc -d oli-doc-demo.surge.sh",
-        "prettier": "prettier --write src/**/*.ts package.json"
+        "prettier": "prettier --write src/**/*.ts *.json"
     },
     "repository": {
         "type": "git",

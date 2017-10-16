@@ -1,7 +1,7 @@
 import { Part } from "./part";
 
 /**
- * A Question represents a single (multipart) OLI question. 
+ * A Question represents a single (multipart) OLI question.
  *
  * Questions mainly serves to hold {@link Part Parts}.
  *
@@ -13,9 +13,14 @@ export class Question {
     private parts: { [id: string]: Part };
 
     /**
-     * @param id The unique identifier for the question. NOTE - Does this have to be unique within an entire
-     * module? Or within an entire X? What is its use?
-     * @param prompt The text shown to the student, generally (always?) before any question parts.
+     * @param id The unique identifier for the question.
+     *
+     * XXX - Does this have to be unique within an entire module? Or within an entire X? What is its use?
+     *
+     * @param prompt The question's prompt text. Generally shown to the user before any question parts, though
+     * this is configurable.
+     *
+     * XXX - check whether this is expected to be HTML text or something like that.
      */
     constructor(id: string, prompt: string) {
         this.id = id;
@@ -23,37 +28,63 @@ export class Question {
         this.parts = {};
     }
 
+    /**
+     * Get the unique identifier for the question.
+     */
     public getId(): string {
         return this.id;
     }
 
     /**
-     * NOTE is this ever used?
+     * Set the unique identifier for the question.
+     *
+     * XXX - is this ever used?
      */
-    public setId(id: string) {
+    public setId(id: string): void {
         this.id = id;
     }
 
+    /**
+     * Get the question's prompt text.
+     */
     public getPrompt(): string {
         return this.prompt;
     }
 
     /**
-     * NOTE is this ever used?
+     * Set the question's prompt text.
+     *
+     * XXX - is this ever used?
      */
-    public setPrompt(prompt: string) {
+    public setPrompt(prompt: string): void {
         this.prompt = prompt;
     }
 
+    /**
+     * Get all the {@link Part Parts} of a question in a map keyed by the part's unique identifer.
+     */
     public getParts(): { readonly [id: string]: Part } {
         return this.parts;
     }
 
-    public getPart(id: string): Part {
-        return this.parts[id];
+    /**
+     * Use a part's unique identifier to access the {@link Part}.
+     */
+    public getPart(id: string): Part | null {
+        if (id in this.parts) {
+            return this.parts[id];
+        } else {
+            return null;
+        }
     }
 
-    public addInput(input: Part) {
-        this.parts[input.getId()] = input;
+    /**
+     * Add a new {@link Part} to the question. If a part with the same unique identifier has already
+     * been added, the old part will be replaced by the new part without warning.
+     *
+     * @param part - The new part.
+     */
+    public addInput(part: Part): void {
+        this.parts[part.getId()] = part;
     }
 }
