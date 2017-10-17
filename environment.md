@@ -56,10 +56,11 @@ the filename in the `embed_activity` XML document.
 ``` js
 define(function() {
     return {
-        init: function(superClient, activityData) {
-            let p = document.createElement("p");
-            p.innerHTML = "Hello World";
-            document.body.appendChild(p);
+        init: function(superact, activityData) {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = "Hello, World!";
+            document.body.appendChild(input);
         }
     };
 });
@@ -93,3 +94,55 @@ add this into one of the `<body>` sections:
     <wb:inline idref="hello"/>
 </composite_activity>
 ```
+
+Storing state with the Superactivity
+====================================
+
+Our first Hello World program just gave us an editable text field containing "Hello, World!"
+
+This is a fine demonstration, but it leaves off two fundamental things that custom activities are supposed to
+do: remember the student's state and give feedback on the student's state. We'll start with the first
+part.
+
+First we need to discuss the OLI data storage model, which is is centered around an idea of Attempts. Six
+timestamps (stored as Unix millisecond-precision timestamps) are attached to attempts. ***Two appear to be
+duplicates of two others?!*** You normally don't have to worry about any of them, but they're useful for
+understanding the three-step lifecycle of an Attempt: unscored, scored, completed.
+
+ * `dateStarted` - This is never `undefined`, and is always the smallest number unless a clock skews
+   somewhere. It records when the student's browser first loaded the question.
+ * `dateScored` - This is `undefined` until a grade has been submitted, at which point it becomes the date of
+   the most recent scoring attempt (multiple scoring attempts are allowed). It will always be strictly greater
+   than `dateStarted` unless a clock skews somewhere.
+ * `dateCompleted` - This is `undefined` until the attempt is completed, at which point no further changes can
+   be made to the Attempt timestamps. It will always be strictly greater than `dateScored` unless a clock
+   skews somewhere.
+ * `dateModified` - This is never `undefined`, and is always equal to the greatest of the three previous
+   fields (possibly unless a clock skews somewhere, don't know what would happen then).
+ * `dateAccessed` - ***Is it possible for this to differ from `dateModified`?***
+ * `dateSubmitted` - ***Is it possible for this to differ from `dateScored`?***
+
+XXX Raphael - is it a bug or potential bug that files data for an Attempt can be modified after the Attempt is
+complete? Intuitively it seems like that should probably fail just as trying to score or complete a completed
+attempt should fail.
+
+
+Scratch Notes
+=============
+
+webContentFolder
+currentAttempt
+fileRecordList
+sessionId
+resourceId
+activityGuid
+timeZone
+
+loadFileRecord(rec, att, resp => ...)
+isCurrentAttemptCompleted()
+logAction(action)
+writeFileRecord(rec, mimetype, att, data, resp => ...)
+scoreAttempt(?, ?, resp => ...)
+endAttempt(resp => ...)
+processStartData(?)
+startAttempt()
