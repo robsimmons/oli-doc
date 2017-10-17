@@ -77,7 +77,7 @@ export class QuestionData {
     }
 
     /**
-     * Increment the score based on the results of {@link PartData.getScore()} on each constituent {@link
+     * Increment the score based on the results of {@link PartData.getScore} on each constituent {@link
      * PartData}.
      *
      * XXX - This seems both in conflict with {@link setScore} and confusingly non-idempotent: if you set the
