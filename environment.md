@@ -1,4 +1,4 @@
-What is a custom activity? A custom activity is:
+What is a custom activity?
 
  * A [RequireJS module](http://requirejs.org/)
  * With an `init` method that exepcts two arguments, an OLI Superactivity object and a data object listing
@@ -53,16 +53,14 @@ The Javascript file is `content/$MODULE/webcontent/hello.js`. If there was more 
 `content/$MODULE/webcontent/hello/main.js` or something. The filename can be anything, it just has to match
 the filename in the `embed_activity` XML document.
 
-``` js
-define(function() {
-    return {
-        init: function(superact, activityData) {
-            const input = document.createElement("input");
-            input.type = "text";
-            input.value = "Hello, World!";
-            document.body.appendChild(input);
-        }
-    };
+``` ts
+define({
+    init: function() {
+        const inputElem = document.createElement("input");
+        inputElem["type"] = "text";
+        inputElem["value"] = "Hello, World!";
+        document.body.appendChild(inputElem);
+    }
 });
 ```
 
@@ -70,13 +68,14 @@ Notice that we're just attaching to the document body. If we wanted to be a bit 
 have grabbed that `<div id="oli-embed">` and attached to that. We're in an iframe, though, so it doesn't much
 matter.
 
-The other file is the `embed_activity` XML file. It's filename needs to match its top-level `id` property, so
-it is in `content/$MODULE/x-oli-embed-activity/hello.xml`.
+(Why did we do `inputElem["type"]` instead of `inputElem.type`? Shh, this is actually Typescript.)
 
-```xml
+The other file is the `embed_activity` XML file. This file's name needs to match its top-level `id` property,
+so because I made the `id="hello"`, the filename needs to be `content/$MODULE/x-oli-embed-activity/hello.xml`.
+
+``` xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE embed_activity PUBLIC "-//Carnegie Mellon University//DTD Embed 1.1//\
-EN" "http://oli.cmu.edu/dtd/oli-embed-activity_1.0.dtd">
+<!DOCTYPE embed_activity PUBLIC "-//Carnegie Mellon University//DTD Embed 1.1//EN" "http://oli.cmu.edu/dtd/oli-embed-activity_1.0.dtd">
 <embed_activity id="hello" width="500" height="300" >
     <title>Hello, Custom Activity!</title>
     <source>Integers/webcontent/hello.js</source>
@@ -86,27 +85,84 @@ EN" "http://oli.cmu.edu/dtd/oli-embed-activity_1.0.dtd">
 (Note that the `<source>` tag includes `Integers/`, which would need to be changed if you have a different
 value for `$MODULE`.)
 
-With these two pieces in place we can test building our module, but we can't see it because it's not referenced anywhere. Assuming you already have some workbook pages in `content/$MODULE/x-oli-workbook_page`, you can
-add this into one of the `<body>` sections:
+With these two pieces in place we can test building our module, but we can't see it because it's not
+referenced anywhere. Assuming you already have some workbook pages in `content/$MODULE/x-oli-workbook_page`,
+you can add this into one of the `<body>` sections:
 
 ``` xml
 <composite_activity purpose="learnbydoing">
-    <wb:inline idref="hello"/>
+    <wb:inline idref="hello" />
 </composite_activity>
 ```
+
+We now have a Hello World program: it gives us an editable text field that can't be saved or graded. We'll fix
+both of those problems, one at a time.
 
 Storing state with the Superactivity
 ====================================
 
-Our first Hello World program just gave us an editable text field containing "Hello, World!"
+First, we want to store state for our activity, so that when someone edits text and reloads the page, they
+will see their own text, not the default hello-world message. We'll store this data as a File Record. File
+Records are attached to Attempts. We don't need to worry much about what attempts are, because they are
+managed by the SuperActivity. The SuperActivity is passed as the first argument to our `init` method.
 
-This is a fine demonstration, but it leaves off two fundamental things that custom activities are supposed to
-do: remember the student's state and give feedback on the student's state. We'll start with the first
-part.
+We check for a file record `record` if our attempt number is `n` by checking for the record `record + n` in
+the superactivity's `fileRecordList` property. (This is not a great interface, but we can build a better one.)
+We'll make a new record whenever the input changes, and whenever the student reloads the page, their last
+saved record will be loaded into the text field instead of the default message. This naturally gives a
+four-step process to the custom activity:
+
+``` ts
+const INPUT_RECORD = "text_input";
+
+define({
+    init: function(superActivity: SuperActivity) {
+        // STEP 1: Create HTML compontents
+        const inputElem = document.createElement("input");
+        inputElem["type"] = "text";
+
+        // STEP 2: Restore saved state
+        // Input field is stored in INPUT_RECORD
+        if (superActivity.fileRecordList.hasOwnProperty(INPUT_RECORD + superActivity.currentAttempt)) {
+            superActivity.loadFileRecord(INPUT_RECORD, superActivity.currentAttempt, response => {
+                inputElem.value = response;
+            });
+        } else {
+            inputElem.value = "Hello, World!";
+        }
+
+        // STEP 3: Set up handlers
+        inputElem.oninput = () => {
+            const value = inputElem.value;
+            superActivity.writeFileRecord(
+                INPUT_RECORD,
+                "text/plain",
+                superActivity.currentAttempt,
+                value,
+                response => {
+                    console.log("Recorded input " + value + ", got response:");
+                    console.log(response);
+                }
+            );
+        };
+
+        // STEP 4: Attach HTML compontents
+        document.body.appendChild(inputElem);
+    }
+});
+````
+
+Scoring, attempting, completing
+===============================
+
+
+An Attempt has three potential states that we'll think about: unscored, scored, and completed. (It's possible
+for an Attempt to be unscored and completed, but that's only used we'll only complete assignments that we've
+scored.)
 
 First we need to discuss the OLI data storage model, which is is centered around an idea of Attempts. Six
 timestamps (stored as Unix millisecond-precision timestamps) are attached to attempts. ***Two appear to be
-duplicates of two others?!*** 
+duplicates of two others?!***
 
  * `dateStarted` - This is never `undefined`, and is always the smallest number unless a clock skews
    somewhere. It records when the student's browser first loaded the question.
@@ -143,11 +199,13 @@ resourceId
 activityGuid
 timeZone
 
-loadFileRecord(rec, att, resp => ...)
-isCurrentAttemptCompleted()
+processStartData(?)
 logAction(action)
+
+loadFileRecord(rec, att, resp => ...)
 writeFileRecord(rec, mimetype, att, data, resp => ...)
+
+startAttempt(startData => ...)
 scoreAttempt(?, ?, resp => ...)
 endAttempt(resp => ...)
-processStartData(?)
-startAttempt()
+isCurrentAttemptCompleted()
